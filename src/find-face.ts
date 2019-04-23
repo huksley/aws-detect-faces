@@ -92,7 +92,7 @@ export const postHandler = (event: APIGatewayEvent, context: LambdaContext) =>
 /** Invoked on S3 event */
 export const s3EventHandler = (event: S3Event, context: LambdaContext) => {
   Promise.all(
-    event.Records.map(r =>
+    event.Records.filter(r => r.s3.object.key.endsWith('.jpg')).map(r =>
       findFace(
         decode<Input>(InputPayload, {
           s3Url: 's3://' + r.s3.bucket + '/' + r.s3.object.key,
