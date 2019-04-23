@@ -37,8 +37,6 @@ describe('check types', () => {
         s3Url: `https://s3-${config.AWS_REGION}.amazonaws.com/${config.SAMPLE_BUCKET}/${
           config.SAMPLE_KEYPREFIX
         }.jpg`,
-        processId: undefined,
-        taskId: undefined,
       },
       new Rekognition({ region: config.AWS_REGION }),
     )

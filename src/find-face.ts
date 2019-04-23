@@ -1,15 +1,17 @@
 import { logger as log } from './logger'
 import { config } from './config'
-import { notify } from './workflow'
 import { Rekognition, S3 } from 'aws-sdk'
 import { urlToBucketName, urlToKeyName, passert, plog, decode } from './util'
 import * as t from 'io-ts'
-import { APIGatewayEvent as LambdaEvent, Context as LambdaContext } from 'aws-lambda'
+import {
+  APIGatewayEvent as LambdaEvent,
+  Context as LambdaContext,
+  APIGatewayEvent,
+  S3Event,
+} from 'aws-lambda'
 
 export const InputPayload = t.type({
   s3Url: t.string,
-  processId: t.union([t.string, t.undefined]),
-  taskId: t.union([t.string, t.undefined]),
 })
 
 export type Input = t.TypeOf<typeof InputPayload>
@@ -76,15 +78,27 @@ export const findFace = (r: Input, rekognition: Rekognition) => {
                 Key: urlToKeyName(r.s3Url) + '.face.json',
                 Body: JSON.stringify(res),
                 ContentType: 'application/json',
-                ACL: 'public-read',
+                ACL: 'bucket-owner-full-control',
               })
               .promise() && plog('Rekognition result', res, mapResultToOutput(res)),
         )
     })
 }
 
-export const handler = (event: LambdaEvent, context: LambdaContext) =>
-  findFace(decode<Input>(InputPayload, event.body), rek)
-    .then(res => notify('SUCCESS', decode<Output>(OutputPayload, res)))
-    .then(_ => context.done())
-    .catch(err => notify('FAILED', err) && context.done(err, 500))
+/** Invoked on API Gateway call */
+export const postHandler = (event: APIGatewayEvent, context: LambdaContext) =>
+  findFace(decode<Input>(InputPayload, event.body), rek).then(_ => context.done())
+
+/** Invoked on S3 event */
+export const s3EventHandler = (event: S3Event, context: LambdaContext) => {
+  Promise.all(
+    event.Records.map(r =>
+      findFace(
+        decode<Input>(InputPayload, {
+          s3Url: 's3://' + r.s3.bucket + '/' + r.s3.object.key,
+        }),
+        rek,
+      ),
+    ),
+  ).then(_ => context.done())
+}
