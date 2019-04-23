@@ -1,0 +1,36 @@
+{
+  "defaultSeverity": "error",
+  "extends": ["tslint:latest", "tslint-config-prettier"],
+  "jsRules": {
+    "ordered-imports": false,
+    "object-literal-sort-keys": false,
+    "no-submodule-imports": false,
+    "no-implicit-dependencies": false,
+    "no-object-literal-type-assertion": false,
+    "max-classes-per-file": false,
+    "arrow-parens": false,
+    // This is disabled because Hapi request parameters live in
+    // a dictionary that is accessed by indexing with a string,
+    // and due to https://github.com/palantir/tslint/issues/1257
+    "no-string-literal": false,
+    // Don't require interfaces to start with an I because
+    // not even TS docs do this.
+    "interface-name": [false]
+  },
+  "rules": {
+    "ordered-imports": false,
+    "object-literal-sort-keys": false,
+    "no-submodule-imports": false,
+    "no-implicit-dependencies": false,
+    "no-object-literal-type-assertion": false,
+    "max-classes-per-file": false,
+    "arrow-parens": false,
+    // This is disabled because Hapi request parameters live in
+    // a dictionary that is accessed by indexing with a string,
+    // and due to https://github.com/palantir/tslint/issues/1257
+    "no-string-literal": false,
+    // Don't require interfaces to start with an I because
+    // not even TS docs do this.
+    "interface-name": [false]
+  }
+}

@@ -1,0 +1,60 @@
+{
+  "name": "typescript-template",
+  "description": "My project",
+  "version": "0.1.0",
+  "main": "src/find-face.ts",
+  "license": "MIT",
+  "engines": {
+    "node": ">=8.9.0 <11.0.0",
+    "yarn": ">=1.12.3"
+  },
+  "dependencies": {
+    "@types/aws-lambda": "^8.10.24",
+    "@types/mocha": "^5.2.6",
+    "@types/ramda": "^0.26.8",
+    "assert": "^1.4.1",
+    "aws-lambda": "^0.1.2",
+    "aws-sdk": "^2.441.0",
+    "cross-env": "^5.2.0",
+    "dotenv": "^7.0.0",
+    "express": "^4.16.4",
+    "io-ts": "^1.8.5",
+    "mocha": "^6.1.4",
+    "ramda": "^0.26.1",
+    "typescript": "^3.4.3",
+    "winston": "^2"
+  },
+  "devDependencies": {
+    "@types/dotenv": "^6.1.1",
+    "@types/node": "^11.13.5",
+    "nodemon": "^1.18.11",
+    "prettier": "^1.17.0",
+    "pretty-quick": "^1.10.0",
+    "shx": "^0.3.2",
+    "ts-node": "^8.1.0",
+    "tslint": "^5.16.0",
+    "tslint-config-prettier": "^1.18.0"
+  },
+  "scripts": {
+    "clean": "shx rm -Rf build node_modules",
+    "dev": "cross-env NODE_ENV=development nodemon -r ts-node/register src/index.ts",
+    "start": "cross-env NODE_ENV=production node ./build/index.js",
+    "build": "tsc -p .",
+    "format": "prettier \"src/**/*.{js,ts,tsx}\" --write",
+    "lint": "tslint \"src/**/*.js\" \"src/**/*.ts\"",
+    "test": "mocha -r ts-node/register --extension ts \"src/**/*.spec.ts\""
+  },
+  "prettier": {
+    "semi": false,
+    "printWidth": 100,
+    "parser": "typescript",
+    "singleQuote": true,
+    "trailingComma": "all"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "pretty-quick --staged --pattern \"**/*.*(js|jsx|ts|tsx)\"",
+      "pre-push": "yarn lint && yarn run -s build && yarn test"
+    }
+  }
+}
