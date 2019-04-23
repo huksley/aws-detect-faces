@@ -9,22 +9,19 @@
     "yarn": ">=1.12.3"
   },
   "dependencies": {
-    "@types/aws-lambda": "^8.10.24",
-    "@types/mocha": "^5.2.6",
-    "@types/ramda": "^0.26.8",
     "assert": "^1.4.1",
     "aws-lambda": "^0.1.2",
     "aws-sdk": "^2.441.0",
     "cross-env": "^5.2.0",
     "dotenv": "^7.0.0",
-    "express": "^4.16.4",
     "io-ts": "^1.8.5",
-    "mocha": "^6.1.4",
     "ramda": "^0.26.1",
-    "typescript": "^3.4.3",
     "winston": "^2"
   },
   "devDependencies": {
+    "@types/aws-lambda": "^8.10.24",
+    "@types/mocha": "^5.2.6",
+    "@types/ramda": "^0.26.8",
     "@types/dotenv": "^6.1.1",
     "@types/node": "^11.13.5",
     "nodemon": "^1.18.11",
@@ -33,7 +30,9 @@
     "shx": "^0.3.2",
     "ts-node": "^8.1.0",
     "tslint": "^5.16.0",
-    "tslint-config-prettier": "^1.18.0"
+    "tslint-config-prettier": "^1.18.0",
+    "mocha": "^6.1.4",
+    "typescript": "^3.4.3"
   },
   "scripts": {
     "clean": "shx rm -Rf build node_modules",
