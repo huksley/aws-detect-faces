@@ -65,18 +65,29 @@ export const findFace = (r: Input, rekognition: Rekognition) => {
           Attributes: ['ALL'],
         })
         .promise()
-        .then(
-          res =>
-            s3
-              .putObject({
-                Bucket: urlToBucketName(r.s3Url),
-                Key: urlToKeyName(r.s3Url) + '.face.json',
-                Body: JSON.stringify(res),
-                ContentType: 'application/json',
-                ACL: 'bucket-owner-full-control',
-              })
-              .promise() && plog('Rekognition result', res, mapResultToOutput(res)),
-        )
+        .then(res => {
+          plog('Rekognition result', res, mapResultToOutput(res))
+          log.info(
+            'Saving rekognition result as ' +
+              urlToBucketName(r.s3Url) +
+              '/' +
+              urlToKeyName(r.s3Url) +
+              '.face.json',
+          )
+
+          return s3
+            .putObject({
+              Bucket: urlToBucketName(r.s3Url),
+              Key: urlToKeyName(r.s3Url) + '.face.json',
+              Body: JSON.stringify(res),
+              ContentType: 'application/json',
+              ACL: 'public-read',
+            })
+            .promise()
+            .then(s3save => log.info('Saved to S3', s3save))
+            .catch(s3saveerr => log.warn('Failed to save to S3', s3saveerr))
+        })
+        .catch(rekerr => log.warn('Failed rekognition', rekerr))
     })
 }
 
@@ -90,7 +101,7 @@ export const s3EventHandler = (event: S3Event, context: LambdaContext) => {
     event.Records.filter(r => r.s3.object.key.endsWith('.jpg')).map(r =>
       findFace(
         decode<Input>(InputPayload, {
-          s3Url: 's3://' + r.s3.bucket + '/' + r.s3.object.key,
+          s3Url: 's3://' + r.s3.bucket.name + '/' + r.s3.object.key,
         }),
         rek,
       ),

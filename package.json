@@ -46,7 +46,7 @@
     "format": "prettier \"src/**/*.{js,ts,tsx}\" --write",
     "lint": "tslint \"src/**/*.js\" \"src/**/*.ts\"",
     "test": "mocha -r ts-node/register --extension ts \"src/**/*.spec.ts\"",
-    "deploy": "serverless deploy"
+    "deploy": "serverless deploy && serverless s3deploy"
   },
   "prettier": {
     "semi": false,

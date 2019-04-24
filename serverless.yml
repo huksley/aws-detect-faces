@@ -23,6 +23,9 @@ provider:
           - ""
           - - "arn:aws:s3:::"
             - ${env:IMAGE_BUCKET}
+    - Effect: "Allow"
+      Action: "rekognition:DetectFaces"
+      Resource: "*"
 
 plugins:
   - serverless-plugin-typescript
@@ -42,10 +45,11 @@ functions:
           method: post
           cors: true
   findFaceS3:
-    handler: src/find-face.s3EventHandlers
+    handler: src/find-face.s3EventHandler
     events:
       - existingS3:
           bucket: ${env:IMAGE_BUCKET, 'sample-bucket'}
-          event: s3:ObjectCreated:*
+          events:
+            - s3:ObjectCreated:*
           rules:
             - suffix: .jpg
