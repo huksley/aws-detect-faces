@@ -1,0 +1,51 @@
+service: aws-detect-faces
+
+provider:
+  name: aws
+  runtime: nodejs8.10
+  region: eu-west-1
+  stage: dev
+  # optional, in MB, default is 1024, min is 128
+  memorySize: 128
+  # optional, in seconds, default is 6
+  timeout: 3
+  # optional, default is true
+  versionFunctions: false
+  environment:
+    # Bucket to operate for S3 events
+    IMAGE_BUCKET: ${env:IMAGE_BUCKET, 'sample-bucket'}
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action:
+        - "s3:*"
+      Resource:
+        Fn::Join:
+          - ""
+          - - "arn:aws:s3:::"
+            - ${env:IMAGE_BUCKET}
+
+plugins:
+  - serverless-plugin-typescript
+  - serverless-plugin-existing-s3
+
+package:
+  exclude:
+    - "node_modules/aws-sdk/**"
+    - "node_modules/aws-lambda/**"
+
+functions:
+  findFacePost:
+    handler: src/find-face.postHandler
+    events:
+      - http:
+          path: api
+          method: post
+          cors: true
+  findFaceS3:
+    handler: src/find-face.s3EventHandlers
+    events:
+      - existingS3:
+          bucket: ${env:IMAGE_BUCKET, 'sample-bucket'}
+          event: s3:ObjectCreated:*
+          rules:
+            - suffix: .jpg

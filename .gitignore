@@ -45,3 +45,6 @@ test-results.xml
 
 # babel build
 build
+
+# Serverless assets
+.serverless

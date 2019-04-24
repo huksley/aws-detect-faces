@@ -3,12 +3,7 @@ import { config } from './config'
 import { Rekognition, S3 } from 'aws-sdk'
 import { urlToBucketName, urlToKeyName, passert, plog, decode } from './util'
 import * as t from 'io-ts'
-import {
-  APIGatewayEvent as LambdaEvent,
-  Context as LambdaContext,
-  APIGatewayEvent,
-  S3Event,
-} from 'aws-lambda'
+import { Context as LambdaContext, APIGatewayEvent, S3Event } from 'aws-lambda'
 
 export const InputPayload = t.type({
   s3Url: t.string,

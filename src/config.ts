@@ -1,5 +1,6 @@
 import * as dotenv from 'dotenv'
 import * as R from 'ramda'
+import 'source-map-support/register'
 
 export const defaultConfig = {
   NODE_ENV: 'development' as 'development' | 'product',
