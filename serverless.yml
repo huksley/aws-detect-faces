@@ -24,6 +24,15 @@ provider:
           - - "arn:aws:s3:::"
             - ${env:IMAGE_BUCKET}
     - Effect: "Allow"
+      Action:
+        - "s3:*"
+      Resource:
+        Fn::Join:
+          - ""
+          - - "arn:aws:s3:::"
+            - ${env:IMAGE_BUCKET}
+            - "/*"
+    - Effect: "Allow"
       Action: "rekognition:DetectFaces"
       Resource: "*"
 
