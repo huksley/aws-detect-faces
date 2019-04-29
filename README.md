@@ -1,6 +1,6 @@
 # AWS Detect faces
 
-Fully typed, tested AWS Lambda code to detect faces using [AWS Rekognition](https://docs.aws.amazon.com/rekognition/)
+Typescript AWS Lambda to detect faces using [AWS Rekognition](https://docs.aws.amazon.com/rekognition/)
 
   * Typescript
   * Unit and e2e tests
@@ -19,6 +19,7 @@ Fully typed, tested AWS Lambda code to detect faces using [AWS Rekognition](http
   * Invoke Lambda by saving .jpg file to S3 bucket
   * Check CloudWatch logs for processing journal
   * Check S3 bucket for .face.json cached rekognition results
+  * To run e2e test run `TEST_RUN_E2E=1 E2E_IMAGE_URL=s3://test-bucket/img.jpg yarn test`
 
 ## Links
 

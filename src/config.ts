@@ -6,14 +6,16 @@ export const defaultConfig = {
   NODE_ENV: 'development' as 'development' | 'product',
   LOG_LEVEL: 'info' as 'info' | 'debug' | 'warn' | 'error',
   AWS_REGION: 'eu-west-1',
-  /** Should run e2e tests, potentially inducing money? */
-  TEST_RUN_E2E: false,
-  SAMPLE_BUCKET: 'sample-bucket',
-  SAMPLE_KEYPREFIX: 'test-assets/sample',
+  /** Should run e2e tests, potentially spending money? */
+  TEST_E2E: false,
+  /** URL for image to run tests against */
+  E2E_IMAGE_URL: 's3://sample-bucket/test-assets/sample.jpg',
 }
 
+type defaultConfigKey = keyof typeof defaultConfig
+
 /** Converts specific keys to boolean */
-const toBoolean = (o: typeof defaultConfig, k: string[]): typeof defaultConfig => {
+const toBoolean = (o: typeof defaultConfig, k: defaultConfigKey[]): typeof defaultConfig => {
   for (const kk of k) {
     o[kk] = typeof o[kk] === 'string' ? Boolean(o[kk]) : o[kk]
   }
@@ -21,9 +23,10 @@ const toBoolean = (o: typeof defaultConfig, k: string[]): typeof defaultConfig =
 }
 
 /** Converts specific keys to number */
-const toNumber = (o: typeof defaultConfig, k: string[]): typeof defaultConfig => {
+const toNumber = (o: typeof defaultConfig, k: defaultConfigKey[]): typeof defaultConfig => {
+  const oo = o as any
   for (const kk of k) {
-    o[kk] = typeof o[kk] === 'string' ? Number(o[kk]) : o[kk]
+    oo[kk] = typeof o[kk] === 'string' ? Number(o[kk]) : o[kk]
   }
   return o
 }
@@ -37,7 +40,7 @@ export const config = toNumber(
       ...defaultConfig,
       ...(dotenv.config().parsed || R.pick(R.keys(defaultConfig), process.env)),
     },
-    ['TEST_RUN_E2E'],
+    ['TEST_E2E'],
   ),
   [],
 )

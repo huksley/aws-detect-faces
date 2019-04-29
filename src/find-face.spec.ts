@@ -30,13 +30,12 @@ describe('check types', () => {
     }
   })
 
-  const e2e = config.TEST_RUN_E2E ? it : it.skip
-  e2e('can detect at sample', () => {
+  const e2e = config.TEST_E2E ? it : it.skip
+  e2e('can detect at sample', function() {
+    this.timeout(10000)
     const res = findFace(
       {
-        s3Url: `https://s3-${config.AWS_REGION}.amazonaws.com/${config.SAMPLE_BUCKET}/${
-          config.SAMPLE_KEYPREFIX
-        }.jpg`,
+        s3Url: config.E2E_IMAGE_URL,
       },
       new Rekognition({ region: config.AWS_REGION }),
     )
