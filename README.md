@@ -8,6 +8,7 @@ Typescript AWS Lambda to detect faces using [AWS Rekognition](https://docs.aws.a
   * Caches Rekognition responses in S3 along with the object
   * Deployment using [Serverless framework](https://serverless.com)
   * Connect to API Gateway and [S3 events](https://serverless.com/framework/docs/providers/aws/events/s3#setting-filter-rules)
+  * Payload testing using [io-ts](https://github.com/gcanti/io-ts)
 
 ## Installing && running
 
