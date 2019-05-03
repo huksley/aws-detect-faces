@@ -35,9 +35,9 @@ export const urlToKeyName = (s3Url: string): string => {
 }
 
 /** Assert something and pass something */
-export const passert = <T>(value: any | undefined | null, result: T): T => {
+export const passert = <T>(value: any | undefined | null, result: T | null | undefined): T => {
   assert.ok(value)
-  return result
+  return result as NonNullable<T>
 }
 
 /** Log something and pass something */
@@ -48,10 +48,10 @@ export const plog = <T>(msg: string, meta: any | undefined, result: T): T => {
 
 /** Decode or throw exception */
 export const decode = <T>(
-  type: t.TypeC<any> | t.IntersectionC<any>,
+  type: t.TypeC<any> | t.IntersectionC<any> | t.PartialC<any>,
   json: string | undefined | null | any,
 ) => {
-  assert.ok(json)
+  assert.ok(json, 'Incoming JSON is either a string or an object: ' + json)
   const res = type.decode(typeof json === 'string' ? JSON.parse(json!) : json)
   const value = res.getOrElseL(_ => {
     throw new Error('Invalid value ' + JSON.stringify(PathReporter.report(res)))
@@ -59,3 +59,6 @@ export const decode = <T>(
   // Filter undefined
   return R.pick(R.filter(k => value[k] !== undefined, R.keys(value)) as string[], value) as T
 }
+
+export const toThrow = (err: any, msg?: string) =>
+  new Error(err && err && err.message && err.message + (msg && '' + msg))

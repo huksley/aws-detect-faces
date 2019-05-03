@@ -11,9 +11,6 @@ provider:
   timeout: 3
   # optional, default is true
   versionFunctions: false
-  environment:
-    # Bucket to operate for S3 events
-    IMAGE_BUCKET: ${env:IMAGE_BUCKET, 'sample-bucket'}
   iamRoleStatements:
     - Effect: "Allow"
       Action:
@@ -22,7 +19,7 @@ provider:
         Fn::Join:
           - ""
           - - "arn:aws:s3:::"
-            - ${env:IMAGE_BUCKET}
+            - ${env:IMAGE_BUCKET, 'my-image-bucket'}
     - Effect: "Allow"
       Action:
         - "s3:*"
@@ -30,7 +27,7 @@ provider:
         Fn::Join:
           - ""
           - - "arn:aws:s3:::"
-            - ${env:IMAGE_BUCKET}
+            - ${env:IMAGE_BUCKET, 'my-image-bucket'}
             - "/*"
     - Effect: "Allow"
       Action: "rekognition:DetectFaces"
@@ -57,7 +54,7 @@ functions:
     handler: src/find-face.s3EventHandler
     events:
       - existingS3:
-          bucket: ${env:IMAGE_BUCKET, 'sample-bucket'}
+          bucket: ${env:IMAGE_BUCKET, 'my-image-bucket'}
           events:
             - s3:ObjectCreated:*
           rules:

@@ -18,11 +18,12 @@ Typescript AWS Lambda to detect faces using [AWS Rekognition](https://docs.aws.a
   * `> yarn`
   * `> yarn lint && yarn format && yarn test && yarn build`
   * IMAGE_BUCKET=my-image-bucket yarn deploy
-  * Invoke Lambda via url (provide payload for example `{ "s3Url": "s3://bucket-name/image.jpg" }`)
+  * Invoke Lambda via url (provide payload for example `{ "s3Url": "s3://my-image-bucket/image.jpg" }`)
   * Invoke Lambda by saving .jpg file to S3 bucket
   * Check CloudWatch logs for processing journal
   * Check S3 bucket for .face.json cached rekognition results
-  * To run e2e test run `TEST_RUN_E2E=1 E2E_IMAGE_URL=s3://test-bucket/img.jpg yarn test`
+  * To run e2e test try `TEST_RUN_E2E=1 E2E_IMAGE_URL=s3://test-bucket/img.jpg yarn test`
+  * To run remotely try `SLS_DEBUG='*' yarn serverless invoke -f findFacePost -d '{ "s3Url": "s3://rrtest3/beautiful-brunette-cute-774909.jpg" }'`
 
 ## Links
 
