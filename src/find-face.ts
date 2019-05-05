@@ -42,7 +42,7 @@ export const findFace = async (args: Input, rekognition: Rekognition) => {
       (s => ({
         isSmiling: s.Value!,
         smilingConfidence: s.Confidence!,
-      }))(response.FaceDetails![0].Smile || { Value: false, Confidence: 0 }),
+      }))(result.FaceDetails![0].Smile || { Value: false, Confidence: 0 }),
     )
   }
 
