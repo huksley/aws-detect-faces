@@ -9,8 +9,15 @@ Typescript AWS Lambda to detect faces using [AWS Rekognition](https://docs.aws.a
   * Configuration
   * Caches Rekognition responses in S3 along with the object
   * Deployment using [Serverless framework](https://serverless.com)
-  * Connect to API Gateway and [S3 events](https://serverless.com/framework/docs/providers/aws/events/s3#setting-filter-rules)
+  * Connected to API Gateway
+  * Can be run locally (`serverless invoke`) or remotely (`curl`)
   * Payload testing using [io-ts](https://github.com/gcanti/io-ts)
+
+## Settings and private keys management
+
+This project uses chamber CLI tool to manage project settings and private values. 
+Uses AWS Parameter Store to read and populate environment with expected variables.
+To read more about chamber, take a look at my article [Using AWS and segment.io/chamber CLI for managing secrets for your projects](https://medium.com/@ruslanfg/using-segment-io-chamber-for-managing-secrets-for-your-hobby-projects-2e08faaee5e2)
 
 ## Installing && running
 
@@ -22,8 +29,8 @@ Typescript AWS Lambda to detect faces using [AWS Rekognition](https://docs.aws.a
   * Invoke Lambda by saving .jpg file to S3 bucket
   * Check CloudWatch logs for processing journal
   * Check S3 bucket for .face.json cached rekognition results
-  * To run e2e test try `TEST_RUN_E2E=1 E2E_IMAGE_URL=s3://test-bucket/img.jpg yarn test`
-  * To run remotely try `SLS_DEBUG='*' yarn serverless invoke -f findFacePost -d '{ "s3Url": "s3://rrtest3/beautiful-brunette-cute-774909.jpg" }'`
+  * To run e2e test try `TEST_RUN_E2E=1 E2E_IMAGE_URL=s3://my-image-bucket/image.jpg yarn test`
+  * To invoke function try `yarn serverless invoke -f handlePost -d '{ "s3Url": "s3://rmy-image-bucket/image.jpg" }'`
 
 ## Links
 

@@ -3,7 +3,8 @@ import { decode } from './util'
 import * as assert from 'assert'
 import { Rekognition } from 'aws-sdk'
 import { config } from './config'
-import { logger as log } from './logger'
+import { logger as log, logger } from './logger'
+import fetch from 'node-fetch'
 
 describe('check types', () => {
   it('input payload parseable', () => {
@@ -40,5 +41,25 @@ describe('check types', () => {
       new Rekognition({ region: config.AWS_REGION }),
     )
     return res.then(result => log.info('result', result))
+  })
+
+  const skip = config.API_DETECT_FACES_URL && config.TEST_E2E && config.E2E_IMAGE_URL ? it : it.skip
+  skip('remotely invoke URL', () => {
+    fetch(config.API_DETECT_FACES_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        s3Url: config.E2E_IMAGE_URL,
+      }),
+    })
+      .then(apiResponse => apiResponse.json())
+      .then(facesResponse => {
+        logger.warn('Detect faces result', facesResponse)
+      })
+      .catch(apiError => {
+        logger.warn('Failed to detect faces', apiError)
+      })
   })
 })

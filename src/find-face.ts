@@ -1,11 +1,18 @@
 import { logger as log } from './logger'
 import { config } from './config'
 import { Rekognition, S3 } from 'aws-sdk'
-import { urlToBucketName, urlToKeyName, passert, decode, toThrow } from './util'
+import {
+  urlToBucketName,
+  urlToKeyName,
+  passert,
+  decode,
+  toThrow,
+  findPayload,
+  apiResponse,
+} from './util'
 import * as t from 'io-ts'
-import { Context as LambdaContext, APIGatewayEvent, S3Event, Callback } from 'aws-lambda'
+import { Context as LambdaContext, APIGatewayEvent, Callback as LambdaCallback } from 'aws-lambda'
 import { DetectFacesResult, IODetectFacesResult } from './rekognition'
-import winston = require('winston')
 
 export const InputPayload = t.type({
   s3Url: t.string,
@@ -56,8 +63,8 @@ export const findFace = async (args: Input, rekognition: Rekognition) => {
       log.info('Using S3 cached data for', args)
       return mapResultToOutput(JSON.parse(data.Body!.toString('utf-8')))
     })
-    .catch(err => {
-      log.info('Not found in S3 cache, invoking Rekognition (' + err + ')', args)
+    .catch(s3Error => {
+      log.info('Not found in S3 cache, invoking Rekognition (' + s3Error + ')', args)
       return rekognition
         .detectFaces({
           Image: {
@@ -103,8 +110,12 @@ export const findFace = async (args: Input, rekognition: Rekognition) => {
 }
 
 /** Invoked on API Gateway call */
-export const postHandler = (event: APIGatewayEvent, context: LambdaContext, callback: Callback) => {
-  winston.info(
+export const postHandler = (
+  event: APIGatewayEvent,
+  context: LambdaContext,
+  callback: LambdaCallback,
+) => {
+  log.info(
     'event(' +
       typeof event +
       ') ' +
@@ -112,22 +123,12 @@ export const postHandler = (event: APIGatewayEvent, context: LambdaContext, call
       ' context ' +
       JSON.stringify(context, null, 2),
   )
-  findFace(
-    decode<Input>(InputPayload, event.body !== undefined ? event.body : (event as any)),
-    rek,
-  ).then(result => callback(undefined, result))
-}
-
-/** Invoked on S3 event */
-export const s3EventHandler = (event: S3Event, context: LambdaContext) => {
-  Promise.all(
-    event.Records.filter(r => r.s3.object.key.endsWith('.jpg')).map(r =>
-      findFace(
-        decode<Input>(InputPayload, {
-          s3Url: 's3://' + r.s3.bucket.name + '/' + r.s3.object.key,
-        }),
-        rek,
-      ),
-    ),
-  ).then(_ => context.done())
+  const payload = findPayload(event)
+  try {
+    return findFace(decode<Input>(InputPayload, payload), rek)
+      .then(result => apiResponse(event, context, callback).success(result))
+      .catch(failure => apiResponse(event, context, callback).failure(failure))
+  } catch (error) {
+    apiResponse(event, context, callback).failure(error)
+  }
 }

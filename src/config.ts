@@ -10,6 +10,8 @@ export const defaultConfig = {
   TEST_E2E: false,
   /** URL for image to run tests against */
   E2E_IMAGE_URL: 's3://sample-bucket/test-assets/sample.jpg',
+  // Deployed version URL
+  API_DETECT_FACES_URL: '',
 }
 
 type defaultConfigKey = keyof typeof defaultConfig

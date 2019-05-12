@@ -26,13 +26,14 @@
     "@types/dotenv": "^6.1.1",
     "@types/mocha": "^5.2.6",
     "@types/node": "^11.13.5",
+    "@types/node-fetch": "^2.3.3",
     "@types/ramda": "^0.26.8",
     "mocha": "^6.1.4",
+    "node-fetch": "^2.5.0",
     "nodemon": "^1.18.11",
     "prettier": "^1.17.0",
     "pretty-quick": "^1.10.0",
     "serverless": "^1.41.1",
-    "serverless-plugin-existing-s3": "^2.3.3",
     "serverless-plugin-typescript": "^1.1.7",
     "shx": "^0.3.2",
     "ts-node": "^8.1.0",
@@ -47,8 +48,9 @@
     "build": "tsc -p .",
     "format": "prettier \"src/**/*.{js,ts,tsx}\" --write",
     "lint": "tslint \"src/**/*.js\" \"src/**/*.ts\"",
-    "test": "mocha -r ts-node/register --extension ts \"src/**/*.spec.ts\"",
-    "deploy": "serverless deploy && serverless s3deploy"
+    "test": "chamber exec find-face/test1 -- mocha -r ts-node/register --extension ts \"src/**/*.spec.ts\"",
+    "deploy": "chamber exec find-face/test1 -- serverless deploy",
+    "serverless": "chamber exec find-face/test1 -- serverless"
   },
   "prettier": {
     "semi": false,

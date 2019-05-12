@@ -8,7 +8,7 @@ provider:
   # optional, in MB, default is 1024, min is 128
   memorySize: 128
   # optional, in seconds, default is 6
-  timeout: 3
+  timeout: 30
   # optional, default is true
   versionFunctions: false
   iamRoleStatements:
@@ -35,7 +35,6 @@ provider:
 
 plugins:
   - serverless-plugin-typescript
-  - serverless-plugin-existing-s3
 
 package:
   exclude:
@@ -43,19 +42,11 @@ package:
     - "node_modules/aws-lambda/**"
 
 functions:
-  findFacePost:
+  handlePost:
     handler: src/find-face.postHandler
     events:
       - http:
-          path: api
+          enabled: true
+          path: api/findFace
           method: post
           cors: true
-  findFaceS3:
-    handler: src/find-face.s3EventHandler
-    events:
-      - existingS3:
-          bucket: ${env:IMAGE_BUCKET, 'my-image-bucket'}
-          events:
-            - s3:ObjectCreated:*
-          rules:
-            - suffix: .jpg
