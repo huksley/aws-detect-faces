@@ -32,20 +32,35 @@ describe('check types', () => {
   })
 
   const e2e = config.TEST_E2E ? it : it.skip
-  e2e('can detect at sample', function() {
-    this.timeout(10000)
-    const res = findFace(
+  e2e('can detect at sample', () => {
+    return findFace(
       {
         s3Url: config.E2E_IMAGE_URL,
       },
       new Rekognition({ region: config.AWS_REGION }),
+    ).then(result => log.info('result', result))
+  })
+
+  e2e('proper failure to detect at fake S3 url', () => {
+    return findFace(
+      {
+        s3Url: 's3://this-bucket-does-not-exist/this-image-does-not-exist.jpg',
+      },
+      new Rekognition({ region: config.AWS_REGION }),
     )
-    return res.then(result => log.info('result', result))
+      .then(result => {
+        log.info('result', result)
+        assert.ok(false, 'Should never be here')
+      })
+      .catch(err => {
+        log.info('Error rekonizing fake S3 url', err)
+        assert.ok(true, 'My man!')
+      })
   })
 
   const skip = config.API_DETECT_FACES_URL && config.TEST_E2E && config.E2E_IMAGE_URL ? it : it.skip
   skip('remotely invoke URL', () => {
-    fetch(config.API_DETECT_FACES_URL, {
+    return fetch(config.API_DETECT_FACES_URL, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -56,10 +71,32 @@ describe('check types', () => {
     })
       .then(apiResponse => apiResponse.json())
       .then(facesResponse => {
-        logger.warn('Detect faces result', facesResponse)
+        logger.warn('Remote API detect faces result', facesResponse)
+      })
+      .catch(apiError => {
+        logger.warn('Remote API failed to detect faces', apiError)
+        assert(false)
+      })
+  })
+
+  skip('remotely invoke URL and fail', () => {
+    return fetch(config.API_DETECT_FACES_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        s3Url: 's3://this-bucket-does-not-exist/this-image-does-not-exist.jpg',
+      }),
+    })
+      .then(apiResponse => apiResponse.json())
+      .then(facesResponse => {
+        logger.warn('Remove API detect faces result', facesResponse)
+        assert(false)
       })
       .catch(apiError => {
         logger.warn('Failed to detect faces', apiError)
+        assert(true)
       })
   })
 })

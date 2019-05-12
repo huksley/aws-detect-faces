@@ -96,15 +96,18 @@ export const findFace = async (args: Input, rekognition: Rekognition) => {
               ACL: 'public-read',
             })
             .promise()
-            .then(s3save => log.info('Saved to S3', s3save))
-            .catch(s3saveerr => {
-              log.warn('Failed to save to S3', s3saveerr)
-              throw toThrow(s3saveerr)
+            .then(s3Save => {
+              log.info('Saved to S3', s3Save)
+              return mapResultToOutput(res)
+            })
+            .catch(s3SaveError => {
+              log.warn('Failed to save to S3', s3SaveError)
+              throw toThrow(s3SaveError)
             })
         })
-        .catch(rekerr => {
-          log.warn('Failed rekognition', rekerr)
-          throw toThrow(rekerr)
+        .catch(rekognitionError => {
+          log.warn('Failed rekognition', rekognitionError)
+          throw toThrow(rekognitionError)
         })
     })
 }
