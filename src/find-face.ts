@@ -130,8 +130,10 @@ export const postHandler = (
   try {
     return findFace(decode<Input>(InputPayload, payload), rek)
       .then(result => apiResponse(event, context, callback).success(result))
-      .catch(failure => apiResponse(event, context, callback).failure(failure))
+      .catch(failure =>
+        apiResponse(event, context, callback).failure('Failed to find face: ' + failure),
+      )
   } catch (error) {
-    apiResponse(event, context, callback).failure(error)
+    apiResponse(event, context, callback).failure('Failed to find face: ' + error)
   }
 }

@@ -32,7 +32,8 @@ describe('check types', () => {
   })
 
   const e2e = config.TEST_E2E ? it : it.skip
-  e2e('can detect at sample', () => {
+  e2e('can detect at sample', function() {
+    this.timeout(10000)
     return findFace(
       {
         s3Url: config.E2E_IMAGE_URL,
@@ -41,7 +42,8 @@ describe('check types', () => {
     ).then(result => log.info('result', result))
   })
 
-  e2e('proper failure to detect at fake S3 url', () => {
+  e2e('proper failure to detect at fake S3 url', function() {
+    this.timeout(10000)
     return findFace(
       {
         s3Url: 's3://this-bucket-does-not-exist/this-image-does-not-exist.jpg',
@@ -53,13 +55,14 @@ describe('check types', () => {
         assert.ok(false, 'Should never be here')
       })
       .catch(err => {
-        log.info('Error rekonizing fake S3 url', err)
+        log.warn('Error rekonizing fake S3 url', err)
         assert.ok(true, 'My man!')
       })
   })
 
   const skip = config.API_DETECT_FACES_URL && config.TEST_E2E && config.E2E_IMAGE_URL ? it : it.skip
-  skip('remotely invoke URL', () => {
+  skip('remotely invoke URL', function() {
+    this.timeout(10000)
     return fetch(config.API_DETECT_FACES_URL, {
       method: 'POST',
       headers: {
@@ -79,7 +82,8 @@ describe('check types', () => {
       })
   })
 
-  skip('remotely invoke URL and fail', () => {
+  skip('remotely invoke URL and fail', function() {
+    this.timeout(10000)
     return fetch(config.API_DETECT_FACES_URL, {
       method: 'POST',
       headers: {
@@ -91,12 +95,12 @@ describe('check types', () => {
     })
       .then(apiResponse => apiResponse.json())
       .then(facesResponse => {
-        logger.warn('Remove API detect faces result', facesResponse)
-        assert(false)
+        logger.info('Remove API detect faces result', facesResponse)
+        assert(false, 'Should never be here')
       })
       .catch(apiError => {
-        logger.warn('Failed to detect faces', apiError)
-        assert(true)
+        logger.warn('Remote API failed to detect faces', apiError)
+        assert(true, 'My man!')
       })
   })
 })
