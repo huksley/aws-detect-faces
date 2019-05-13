@@ -71,61 +71,70 @@ export const findFace = async (args: Input, rekognition: Rekognition) => {
   }
 
   return s3
-    .getObject({
+    .listObjectsV2({
       Bucket: urlToBucketName(args.s3Url),
-      Key: urlToKeyName(args.s3Url) + '.face.json',
+      Prefix: urlToKeyName(args.s3Url) + '.face.json',
     })
     .promise()
-    .then(data => {
-      log.info('Using S3 cached data for', args)
-      return mapResultToOutput(JSON.parse(data.Body!.toString('utf-8')))
-    })
-    .catch(s3Error => {
-      log.info('Not found in S3 cache, invoking Rekognition (' + s3Error + ')', args)
-      return rekognition
-        .detectFaces({
-          Image: {
-            S3Object: {
-              Bucket: urlToBucketName(args.s3Url),
-              Name: urlToKeyName(args.s3Url),
+    .then(listResult => {
+      if (listResult.KeyCount === 1) {
+        log.info('Already processed', listResult)
+        return s3
+          .getObject({
+            Bucket: urlToBucketName(args.s3Url),
+            Key: urlToKeyName(args.s3Url) + '.face.json',
+          })
+          .promise()
+          .then(data => {
+            log.info('Using S3 cached data for', args)
+            return mapResultToOutput(JSON.parse(data.Body!.toString('utf-8')))
+          })
+      } else {
+        return rekognition
+          .detectFaces({
+            Image: {
+              S3Object: {
+                Bucket: urlToBucketName(args.s3Url),
+                Name: urlToKeyName(args.s3Url),
+              },
             },
-          },
-          Attributes: ['ALL'],
-        })
-        .promise()
-        .then(res => {
-          log.info('Rekognition result', res)
+            Attributes: ['ALL'],
+          })
+          .promise()
+          .then(res => {
+            log.info('Rekognition result', res)
 
-          log.info(
-            'Saving rekognition result as ' +
-              urlToBucketName(args.s3Url) +
-              '/' +
-              urlToKeyName(args.s3Url) +
-              '.face.json',
-          )
+            log.info(
+              'Saving rekognition result as ' +
+                urlToBucketName(args.s3Url) +
+                '/' +
+                urlToKeyName(args.s3Url) +
+                '.face.json',
+            )
 
-          return s3
-            .putObject({
-              Bucket: urlToBucketName(args.s3Url),
-              Key: urlToKeyName(args.s3Url) + '.face.json',
-              Body: JSON.stringify(res),
-              ContentType: 'application/json',
-              ACL: 'public-read',
-            })
-            .promise()
-            .then(s3Save => {
-              log.info('Saved to S3', s3Save)
-              return mapResultToOutput(res)
-            })
-            .catch(s3SaveError => {
-              log.warn('Failed to save to S3', s3SaveError)
-              throw toThrow(s3SaveError)
-            })
-        })
-        .catch(rekognitionError => {
-          log.warn('Failed rekognition', rekognitionError)
-          throw toThrow(rekognitionError)
-        })
+            return s3
+              .putObject({
+                Bucket: urlToBucketName(args.s3Url),
+                Key: urlToKeyName(args.s3Url) + '.face.json',
+                Body: JSON.stringify(res),
+                ContentType: 'application/json',
+                ACL: 'public-read',
+              })
+              .promise()
+              .then(s3Save => {
+                log.info('Saved to S3', s3Save)
+                return mapResultToOutput(res)
+              })
+              .catch(s3SaveError => {
+                log.warn('Failed to save to S3', s3SaveError)
+                throw toThrow(s3SaveError)
+              })
+          })
+          .catch(rekognitionError => {
+            log.warn('Failed rekognition', rekognitionError)
+            throw toThrow(rekognitionError)
+          })
+      }
     })
 }
 
