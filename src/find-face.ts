@@ -25,6 +25,15 @@ export const OutputPayload = t.intersection([
   t.type({
     isSmiling: t.boolean,
     smilingConfidence: t.number,
+    faceRect: t.union([
+      t.type({
+        top: t.number,
+        left: t.number,
+        width: t.number,
+        height: t.number,
+      }),
+      t.undefined,
+    ]),
   }),
 ])
 
@@ -49,6 +58,14 @@ export const findFace = async (args: Input, rekognition: Rekognition) => {
       (s => ({
         isSmiling: s.Value!,
         smilingConfidence: s.Confidence!,
+        faceRect:
+          result.FaceDetails![0].BoundingBox &&
+          (b => ({
+            left: b.Left!,
+            top: b.Top!,
+            width: b.Width!,
+            height: b.Height!,
+          }))(result.FaceDetails![0].BoundingBox),
       }))(result.FaceDetails![0].Smile || { Value: false, Confidence: 0 }),
     )
   }
