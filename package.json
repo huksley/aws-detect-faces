@@ -24,7 +24,7 @@
   "devDependencies": {
     "@types/aws-lambda": "^8.10.26",
     "@types/dotenv": "^6.1.1",
-    "@types/mocha": "^5.2.6",
+    "@types/mocha": "^5.2.7",
     "@types/node": "^11.13.5",
     "@types/node-fetch": "^2.3.3",
     "@types/ramda": "^0.26.8",
