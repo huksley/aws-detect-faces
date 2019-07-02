@@ -27,7 +27,7 @@
     "@types/mocha": "^5.2.6",
     "@types/node": "^11.13.5",
     "@types/node-fetch": "^2.3.3",
-    "@types/ramda": "^0.26.8",
+    "@types/ramda": "^0.26.14",
     "mocha": "^6.1.4",
     "node-fetch": "^2.5.0",
     "nodemon": "^1.19.1",
