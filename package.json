@@ -12,7 +12,7 @@
     "@types/boom": "^7.2.1",
     "assert": "^2.0.0",
     "aws-lambda": "^0.1.2",
-    "aws-sdk": "^2.441.0",
+    "aws-sdk": "^2.496.0",
     "boom": "^7.3.0",
     "cross-env": "^5.2.0",
     "dotenv": "^7.0.0",
